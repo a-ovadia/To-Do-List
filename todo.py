@@ -46,6 +46,7 @@ class Task:
     def change_status(self, new_status):
         self.status = new_status
 
+
 # holds the actual data -> List of Tasks
 class ToDoList: 
 
@@ -69,6 +70,36 @@ class ToDoList:
         for tasks in self.tasks:
             print(tasks)
 
+    def validate_task_id(self, task_id):
+        for task in self.tasks:
+            if task_id == task.id:
+                return True
+        return False
+    
+    def get_task(self, task_id : int):
+        for task in self.tasks:
+            if task.id == task_id:
+                return task 
+        return False
+    
+
+    
+    def update_task(self, task_id, update_desc="", update_deadline = "", update_status = "", update_priority = ""):
+
+        # Validate task_id
+        if not self.validate_task_id(task_id):
+            return False
+        task = self.get_task(task_id)
+
+        if update_desc != "":
+            task.set_description(update_desc)
+        if update_deadline != "":
+            task.set_deadline(update_deadline)
+        if update_status != "":
+            task.set_status(update_status)
+        if update_priority != "":
+            task.set_priority(update_priority)
+        return True
 
 # Menu for user management of ToDoList
 # Is a user interface to interact with the ToDoList
@@ -77,7 +108,7 @@ class UserInterface:
     def __init__(self, todo_list : ToDoList):
         self.todo_list = todo_list
 
-    def add_new_task(self):
+    def ui_add_new_task(self):
         task_desciption = input("Enter task Description\n")
         deadline_str = input("Enter deadline in (mm/dd/yyyy hh:mm) format: ")
         # convert deadline_str into a datetime format
@@ -95,7 +126,7 @@ class UserInterface:
         # Add Task to ToDoList
         self.todo_list.add_task(new_task)
 
-    def remove_task(self):
+    def ui_remove_task(self):
         # Print current task list to display Task ID
         self.todo_list.view_tasks()
         task_id_str = input("Please enter the Task ID to delete: ")
@@ -104,6 +135,32 @@ class UserInterface:
         except: return False
 
         return self.todo_list.remove_task(task_id)
+    
+    def ui_update_task(self):
+        task_id_str = input("Please enter which task # to update: ")
+        # Ensure task ID exists. Return False if it doesn't exist
+        try:
+            task_id = int(task_id_str)
+            if not self.todo_list.validate_task_id(task_id):
+                print("Error. You entered an invalid task ID")
+                return False 
+        except: 
+            print("Error! You have entered an incorrect value. Please ensure you are entering a valid number")
+            return False
+
+        new_desc = input("Enter new description. Press Enter to skip: ").lower()
+        new_deadline = input("Enter new deadline in (mm/dd/yyyy hh:mm) format. Press Enter to skip: ")   
+        new_status = input("Enter new staus. Press Enter to skip: ").lower()
+        new_priority = input("Enter new priortiy. Press Enter to skip: ").lower()
+
+        try:
+            new_deadline = dt.datetime.strptime(new_deadline, "%m/%d/%Y %H:%M")
+        except:
+            if new_deadline != "":
+                print("Error! You entered an date in an invalid format")
+                return False
+                       
+        return self.todo_list.update_task(task_id, new_desc, new_deadline, new_status, new_priority)
 
     def display_main_menu(self):
 
@@ -112,11 +169,12 @@ class UserInterface:
             print("1. Add a new Task")
             print("2. View all Tasks")
             print("3. Remove Task: ")
+            print("4. Update task")
             print("q. Quit Program")
             user_input = input("Enter selection: ")
 
             if user_input == "1":
-                self.add_new_task()
+                self.ui_add_new_task()
 
             # View Tasks
             if user_input == "2":
@@ -124,9 +182,15 @@ class UserInterface:
 
             # Remove Task
             elif user_input == "3":
-                deletion_successful = self.remove_task()
+                deletion_successful = self.ui_remove_task()
                 if deletion_successful: print("Success. Task deleted successfully")
                 else: print("Error - Something went wrong when trying to delete the task. Please ensure you entered a valid task ID #")
+
+            # Update Task
+            elif user_input == "4":
+                self.todo_list.view_tasks()
+                if not self.ui_update_task():
+                    print("Update Failed")
 
             # Quick program
             elif user_input == "q": sys.exit()
