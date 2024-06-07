@@ -129,7 +129,7 @@ class CSVhandler():
             csv_reader = csv.reader(csv_file)
             header = next(csv_reader) # Skip header
             for row in csv_reader:
-                print("{:<8} {:<13} {:<40} {:<20} {:<20} {:<30}".format(row[0], row[1], row[2], row[3], row[4] , row[5]))
+                print("{:<8} {:<13} {:<30} {:<20} {:<20} {:<30}".format(row[0], row[1], row[2], row[3], row[4] , row[5]))
 
     def validate_task_id(self, task_id):
         """
@@ -340,15 +340,25 @@ class UserInterface:
             print("Invalid date format. Please use (mm/dd/yyyy hh:mm).")
             return False
         
-        task_status = input("Enter status (Not Started/In Progress/Completed): ")
-        if task_status.lower() not in ["not started", "in progress", "completed"]:
+        task_status = input("Enter status (n: Not Started/ i: In Progress/ c: Completed): ").lower()
+        if task_status not in ["n", "i", "c"]:
             print("You have entered an invalid status")
             return False
 
-        task_priority = input("Enter priority (low or medium or high): ")
-        if task_priority.lower() not in ["low", "medium", "high"]:
+        if task_status == "c": task_status = "completed"
+        elif task_status == "i": task_status = "in progress"
+        else: task_status = "not started"
+
+        task_priority = input("Enter priority (1: high | 2: medium | 3: low): ")
+        if task_priority.lower() not in ["1", "2", "3"]:
             print("You have entered an invalid priority")
             return False
+
+        if int(task_priority) == 1:
+            task_priority = "high"
+        elif int(task_priority) == 2:
+            task_priority = "medium"
+        else: task_priority = "low"
 
         # Create new Task obj
         new_task = Task(task_desciption, deadline_str, task_status, task_priority)
@@ -387,12 +397,23 @@ class UserInterface:
         task_id = int(task_id_str)
         new_desc = input("Enter new description. Press Enter to skip: ").lower()
         new_deadline = input("Enter new deadline in (mm/dd/yyyy hh:mm) format. Press Enter to skip: ")   
-        new_status = input("Enter new staus. Press Enter to skip: ").lower()
-        new_priority = input("Enter new priortiy. Press Enter to skip: ").lower()
+        new_status = input("Enter new status -> n: not started/i: in progress/ c: completed or Press Enter to skip: ").lower()
+        new_priority = input("Enter new priortiy. -> 1: high, 2: medium, 3: low or Press Enter to skip: ").lower()
 
-        if new_priority.lower() not in ["low", "medium", "high", ""]:
+        if new_status not in ["n", "i", "c"]:
+            print("You have entered an invalid status")
+            return False            
+        if new_status == "n": new_status = "not started"
+        elif new_status == "i": new_status == "in progress"
+        elif new_status == "c": new_status = "completed"
+
+        if new_priority.lower() not in ["1", "2", "3", ""]:
+            print("You have entered an invalid priority")
             return False
         
+        if new_priority == "1": new_priority = "high"
+        elif new_priority == "2": new_priority = "medium"
+        elif new_priority == "3": new_priority = "low"
 
         try:
             new_deadline = dt.datetime.strptime(new_deadline, "%m/%d/%Y %H:%M")
