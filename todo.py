@@ -21,7 +21,7 @@ class Task:
         self.description = description
         self.deadline = deadline
         self.status = status
-        self.date_added = dt.datetime.now()
+        self.date_added = dt.datetime.now().strftime("%m/%d/%Y %H:%M")
         
         # convert priority to int values
         if priority.lower() == "low":
@@ -132,8 +132,22 @@ class CSVhandler():
             row = next(csv_reader)
             for row in csv_reader:
                 last_line = row
-        
+        if last_line == None:
+            return 1
         return int(last_line[0]) + 1
+    
+    def print_csv_file(self):
+        """
+        Outputs contents of the csv to terminal view
+        """
+        print("{:<20} {:<30} {:<20} {:<20} {:<30}".format("Task Priority", "Description", "Status", "Date added", "Deadline"))
+        print("-" * 110)  # Separator line
+        with open(self.path, "r") as csv_file:
+            csv_reader = csv.reader(csv_file)
+            row = next(csv_reader) # Skip header
+            for row in csv_reader:
+                print("{:<20} {:<30} {:<20} {:<20} {:<30}".format(row[1], row[2], row[3], row[4] , row[5]))
+
 
 # holds the actual data -> List of Tasks
 class ToDoList: 
@@ -179,8 +193,7 @@ class ToDoList:
         """
         Output to terminal a list of all Tasks in the Task list
         """
-        for task in self.tasks:
-            print(task)
+        self.csv_obj.print_csv_file()
 
     def validate_task_id(self, task_id):
         """
