@@ -1,6 +1,8 @@
 import datetime as dt
 import sys
 import csv
+import os
+
 ## TODO Store data in a CSV file instead of List
 
 # individual Task
@@ -8,7 +10,7 @@ class Task:
     task_id = 1
 
     # Constructor
-    def __init__(self, description, deadline = None, status = "Not Started", priority = "Low"):
+    def __init__(self, description="", deadline = None, status = "Not Started", priority = "low"):
         """
         Represents a task with a description, deadline, staus, and priority
         Args:
@@ -24,12 +26,7 @@ class Task:
         self.date_added = dt.datetime.now().strftime("%m/%d/%Y %H:%M")
         
         # convert priority to int values
-        if priority.lower() == "low":
-            self.priority = 3
-        elif priority.lower() == "medium":
-            self.priority = 2
-        elif priority.lower() == "high":
-            self.priority = 1
+        self.priority = priority.lower()
 
         # Set Task ID
         self.id = Task.task_id
@@ -118,6 +115,7 @@ class CSVhandler():
         task.set_task_id(next_id)
         with open(self.path, "a", newline="") as csv_file:
             csv_file_writer = csv.writer(csv_file)
+            
             csv_file_writer.writerow([task.get_task_id(), task.priority, task.description, task.status, task.date_added, task.deadline])
 
 
@@ -135,21 +133,55 @@ class CSVhandler():
             for row in csv_reader:
                 last_line = row
         if last_line == None:
-            return 1
+            return 0
         return int(last_line[0])
     
     def print_csv_file(self):
         """
         Outputs contents of the csv to terminal view
         """
-        print("{:<20} {:<30} {:<20} {:<20} {:<30}".format("Task Priority", "Description", "Status", "Date added", "Deadline"))
+        print("{:<20} {:<20} {:<30} {:<20} {:<20} {:<30}".format("Task ID", "Task Priority", "Description", "Status", "Date added", "Deadline"))
         print("-" * 110)  # Separator line
         with open(self.path, "r") as csv_file:
             csv_reader = csv.reader(csv_file)
-            row = next(csv_reader) # Skip header
+            header = next(csv_reader) # Skip header
             for row in csv_reader:
-                print("{:<20} {:<30} {:<20} {:<20} {:<30}".format(row[1], row[2], row[3], row[4] , row[5]))
+                print("{:<20} {:<20} {:<30} {:<20} {:<20} {:<30}".format(row[0], row[1], row[2], row[3], row[4] , row[5]))
 
+        
+    def update_csv_file(self, task, id):
+        # Create temp file 
+        temp_file = self.path + ".tmp"
+        task_found = False
+
+        with open(self.path, "r", newline="") as csv_file, open(temp_file, "w", newline="") as csv_tmp:
+            csv_writer = csv.writer(csv_tmp)
+            csv_reader = csv.reader(csv_file)
+            
+            header = next(csv_reader)
+            csv_writer.writerow(header) # Write header to temp file
+            
+            
+
+            for row in csv_reader:
+                if int(row[0]) == id:
+                    updated_priority = task.priority if task.priority != "" else row[1]
+                    updated_description = task.description if task.description != "" else row[2]
+                    updated_status = task.status if task.status != "" else row[3]
+                    updated_deadline = task.deadline if task.deadline != "" else row[5]
+                    date_added = row[4]
+
+                    csv_writer.writerow([id, updated_priority, updated_description, updated_status, date_added, updated_deadline])
+                    task_found = True
+                    
+                else:
+                    csv_writer.writerow(row)
+                
+    
+        if task_found:
+            os.replace(temp_file, self.path)
+        else:
+            os.remove(temp_file)
 
 # holds the actual data -> List of Tasks
 class ToDoList: 
@@ -218,7 +250,7 @@ class ToDoList:
     
 
     
-    def update_task(self, task_id, update_desc="", update_deadline = "", update_status = "", update_priority = ""):
+    def update_task(self, update_task, task_id):
 
         """
         Update an existing Task in Tasks list with new task data
@@ -229,21 +261,9 @@ class ToDoList:
         update_status -- (str) new task status
         update_priority -- (str) new task priority
         """
-
-        # Validate task_id
-        if not self.validate_task_id(task_id):
-            return False
-        task = self.get_task(task_id)
-
-        if update_desc != "":
-            task.set_description(update_desc)
-        if update_deadline != "":
-            task.set_deadline(update_deadline)
-        if update_status != "":
-            task.set_status(update_status)
-        if update_priority != "":
-            task.set_priority(update_priority)
-        return True
+        
+        
+        self.csv_obj.update_csv_file(update_task, task_id)
     
     def save_to_csv(self):
         return 
@@ -315,19 +335,24 @@ class UserInterface:
         """
         task_id_str = input("Please enter which task # to update: ")
         # Ensure task ID exists. Return False if it doesn't exist
-        try:
-            task_id = int(task_id_str)
-            if not self.todo_list.validate_task_id(task_id):
-                print("Error. You entered an invalid task ID")
-                return False 
-        except: 
-            print("Error! You have entered an incorrect value. Please ensure you are entering a valid number")
-            return False
+        # try:
+        #     task_id = int(task_id_str)
+        #     if not self.todo_list.validate_task_id(task_id):
+        #         print("Error. You entered an invalid task ID")
+        #         return False 
+        # except: 
+        #     print("Error! You have entered an incorrect value. Please ensure you are entering a valid number")
+        #     return False
 
+        task_id = int(task_id_str)
         new_desc = input("Enter new description. Press Enter to skip: ").lower()
         new_deadline = input("Enter new deadline in (mm/dd/yyyy hh:mm) format. Press Enter to skip: ")   
         new_status = input("Enter new staus. Press Enter to skip: ").lower()
         new_priority = input("Enter new priortiy. Press Enter to skip: ").lower()
+
+        if new_priority.lower() not in ["low", "medium", "high", ""]:
+            return False
+        
 
         try:
             new_deadline = dt.datetime.strptime(new_deadline, "%m/%d/%Y %H:%M")
@@ -335,8 +360,9 @@ class UserInterface:
             if new_deadline != "":
                 print("Error! You entered an date in an invalid format")
                 return False
+        update_task = Task(new_desc, new_deadline, new_status, new_priority)
                        
-        return self.todo_list.update_task(task_id, new_desc, new_deadline, new_status, new_priority)
+        return self.todo_list.update_task(update_task, task_id)
 
     
     def display_main_menu(self):
