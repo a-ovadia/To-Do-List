@@ -123,13 +123,13 @@ class CSVhandler():
         """
         Outputs contents of the csv to terminal view
         """
-        print("{:<20} {:<20} {:<30} {:<20} {:<20} {:<30}".format("Task ID", "Task Priority", "Description", "Status", "Date added", "Deadline"))
+        print("{:<8} {:<13} {:<40} {:<20} {:<20} {:<30}".format("Task ID", "Task Priority", "Description", "Status", "Date added", "Deadline"))
         print("-" * 110)  # Separator line
         with open(self.path, "r") as csv_file:
             csv_reader = csv.reader(csv_file)
             header = next(csv_reader) # Skip header
             for row in csv_reader:
-                print("{:<20} {:<20} {:<30} {:<20} {:<20} {:<30}".format(row[0], row[1], row[2], row[3], row[4] , row[5]))
+                print("{:<8} {:<13} {:<40} {:<20} {:<20} {:<30}".format(row[0], row[1], row[2], row[3], row[4] , row[5]))
 
     def validate_task_id(self, task_id):
         """
