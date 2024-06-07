@@ -114,6 +114,8 @@ class CSVhandler():
     # Add a list of Task (ToDoList) to a csv 
     # Append list to the csv file
     def add_todo_to_csv(self, task : Task ):
+        next_id = self.get_next_task_id()
+        task.set_task_id(next_id)
         with open(self.path, "a", newline="") as csv_file:
             csv_file_writer = csv.writer(csv_file)
             csv_file_writer.writerow([task.get_task_id(), task.priority, task.description, task.status, task.date_added, task.deadline])
@@ -168,11 +170,8 @@ class ToDoList:
         Args:
         new_task -- (Task) New Task
         """
-        self.task = new_task
-                # Get starting Task ID
-        current_id = self.csv_obj.get_next_task_id()
-        new_task.set_task_id(current_id)
-        self.csv_obj.add_todo_to_csv(self.task)
+       
+        self.csv_obj.add_todo_to_csv(new_task)
 
     # Remove task from list
     def remove_task(self, remove_task_id : int):
