@@ -114,7 +114,7 @@ class CSVhandler():
     # Add a list of Task (ToDoList) to a csv 
     # Append list to the csv file
     def add_todo_to_csv(self, task : Task ):
-        next_id = self.get_next_task_id()
+        next_id = self.get_last_task_id() + 1
         task.set_task_id(next_id)
         with open(self.path, "a", newline="") as csv_file:
             csv_file_writer = csv.writer(csv_file)
@@ -122,7 +122,7 @@ class CSVhandler():
 
 
 
-    def get_next_task_id(self):
+    def get_last_task_id(self):
         """
         Finds the last task ID in the CSV
         Return -- (int) Task ID of last entry or 0 if empty
@@ -136,7 +136,7 @@ class CSVhandler():
                 last_line = row
         if last_line == None:
             return 1
-        return int(last_line[0]) + 1
+        return int(last_line[0])
     
     def print_csv_file(self):
         """
