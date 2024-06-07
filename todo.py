@@ -281,17 +281,7 @@ class ToDoList:
         task_id -- (int) return true if task_id matches an element in the Tasks list, False otherwise
         """
  
-        return False
-    
-    def get_task(self, task_id : int):
-        """
-        Returns a Task from a Task ID
-        Args:
-        task_id -- (int) Return Task from Task lists matching number. Otherwise return False
-        """
-   
-        return False
-    
+        return False   
 
     
     def update_task(self, update_task, task_id):
@@ -304,14 +294,11 @@ class ToDoList:
         update_deadline -- (datetime) new task deadline
         update_status -- (str) new task status
         update_priority -- (str) new task priority
-        """
-        
+        """   
         
         self.csv_obj.update_csv_file(update_task, task_id)
     
-    def save_to_csv(self):
-        return 
-
+  
 # Menu for user management of ToDoList
 # Is a user interface to interact with the ToDoList
 class UserInterface:
@@ -446,7 +433,6 @@ class UserInterface:
             # Quick program
             elif user_input == "q": 
                 # Save Tasks list to csv
-                self.todo_list.save_to_csv()
                 sys.exit()
 
 
