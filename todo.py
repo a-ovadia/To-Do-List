@@ -7,7 +7,6 @@ import os
 
 # individual Task
 class Task:
-    task_id = 1
 
     # Constructor
     def __init__(self, description="", deadline = None, status = "Not Started", priority = "low"):
@@ -27,18 +26,13 @@ class Task:
         
         # convert priority to int values
         self.priority = priority.lower()
-
-        # Set Task ID
-        self.id = Task.task_id
-        # Incrament Task ID
-        Task.task_id += 1
     
     # define print statement for Task class
     def __repr__(self) -> str:
         """
         Define how Task obj should be represented
         """
-        return f"Task ID: {self.id}\t Description: {self.description}\t Deadline: {self.deadline}\t Status: {self.status}\t Priority: {self.priority}"
+        return f"Description: {self.description}\t Deadline: {self.deadline}\t Status: {self.status}\t Priority: {self.priority}"
 
     def set_description(self, desc):
         """
@@ -75,19 +69,6 @@ class Task:
         """
 
         self.priority = priority
-
-    def set_task_id(self, num):
-        """
-        Sets the task ID
-        Args -- (int) number of task_id
-
-        """
-        self.id = num
-
-    def get_task_id(self): 
-        """Returns the ID of the task""" 
-        return self.id
-     
 
     def change_status(self, new_status):
         """
@@ -213,11 +194,7 @@ class ToDoList:
         remove_task_id -- (int) remove task with the ID from Tasks list
         """
 
-        for task in self.tasks:
-            if task.id == remove_task_id:
-                self.tasks.remove(task)
-                return True
-        return False
+        return
        
 
     def view_tasks(self):
@@ -232,9 +209,7 @@ class ToDoList:
         Args:
         task_id -- (int) return true if task_id matches an element in the Tasks list, False otherwise
         """
-        for task in self.tasks:
-            if task_id == task.id:
-                return True
+ 
         return False
     
     def get_task(self, task_id : int):
@@ -243,9 +218,7 @@ class ToDoList:
         Args:
         task_id -- (int) Return Task from Task lists matching number. Otherwise return False
         """
-        for task in self.tasks:
-            if task.id == task_id:
-                return task 
+   
         return False
     
 
