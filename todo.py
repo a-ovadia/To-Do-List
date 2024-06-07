@@ -83,15 +83,18 @@ class Task:
 # Task ID,Task Priority,Task Description,Task StatusTask Created,Task Deadline
 
 class CSVhandler():
-
+    # Constructor
     def __init__(self, file_path = "hit.csv"):
         self.path = file_path
-
-    
 
     # Add a list of Task (ToDoList) to a csv 
     # Append list to the csv file
     def add_todo_to_csv(self, task : Task ):
+        """
+        Appends a Task to the task list csv
+        Args:
+            task -- (Task) Task to add
+        """
         next_id = self.get_last_task_id() + 1
         with open(self.path, "a", newline="") as csv_file:
             csv_file_writer = csv.writer(csv_file)
@@ -149,6 +152,13 @@ class CSVhandler():
         return False
         
     def update_csv_file(self, task, id):
+        """
+        Updates one Task stored in the tasks list csv
+        Args:
+            task -- (Task) New Task data to replace an existing Task
+            id -- (int) Task ID of position of Task in the csv to update
+
+        """
         # Create temp file 
         temp_file = self.path + ".tmp"
         task_found = False
@@ -162,8 +172,6 @@ class CSVhandler():
             
             header = next(csv_reader)
             csv_writer.writerow(header) # Write header to temp file
-            
-            
 
             for row in csv_reader:
                 if int(row[0]) == id:
@@ -186,6 +194,11 @@ class CSVhandler():
             os.remove(temp_file)
 
     def remove_task(self, task_id):
+        """
+        Removes a task from the task list csv
+        Args:
+            task_id -- (int) Position of the task to remove
+        """
         if not self.validate_task_id(task_id):
             print("Error. You entered an invalid Task ID")
             return False
@@ -232,12 +245,9 @@ class CSVhandler():
             os.remove(tmp_file)
             return False
 
-         
-
-
 # holds the actual data -> List of Tasks
 class ToDoList: 
-
+    # Constructor
     def __init__(self, csv_obj : CSVhandler):
         self.tasks = []
         self.file_path = csv_obj.path
@@ -302,8 +312,7 @@ class ToDoList:
 # Menu for user management of ToDoList
 # Is a user interface to interact with the ToDoList
 class UserInterface:
-    
-
+    # Constructor
     def __init__(self, todo_list : ToDoList):
         """
         Represents an command line terminal interface for managing the Tasks list
@@ -434,9 +443,6 @@ class UserInterface:
             elif user_input == "q": 
                 # Save Tasks list to csv
                 sys.exit()
-
-
-
 
 
 my_csv_handler = CSVhandler()
