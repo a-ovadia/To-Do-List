@@ -12,10 +12,10 @@ class Task:
         """
         Represents a task with a description, deadline, staus, and priority
         Args:
-        description -- (str) Description of task
-        deadline -- (datetime) Deadline of task
-        status -- (str) status of task
-        priority -- (str) - priority of task
+            description -- (str) Description of task
+            deadline -- (datetime) Deadline of task
+            status -- (str) status of task
+            priority -- (str) - priority of task
         
         """
         self.description = description
@@ -40,8 +40,6 @@ class Task:
     def __repr__(self) -> str:
         """
         Define how Task obj should be represented
-        Args:
-        self
         """
         return f"Task ID: {self.id}\t Description: {self.description}\t Deadline: {self.deadline}\t Status: {self.status}\t Priority: {self.priority}"
 
@@ -49,7 +47,7 @@ class Task:
         """
         Sets the task description
         Args:
-        desc --  (str) new task description
+            desc --  (str) new task description
         """
 
         self.description = desc
@@ -58,7 +56,7 @@ class Task:
         """
         Sets the task deadline
         Args:
-        date -- (datetime) new task deadline
+            date -- (datetime) new task deadline
         """
 
         self.deadline = date
@@ -67,7 +65,7 @@ class Task:
         """
         Sets the task status 
         Args:
-        status -- (str) new task status
+            status -- (str) new task status
         """
 
         self.status = status
@@ -76,10 +74,18 @@ class Task:
         """
         Sets the task priority
         Args:
-        priority -- (str) new task priority
+            priority -- (str) new task priority
         """
 
         self.priority = priority
+
+    def set_task_id(self, num):
+        """
+        Sets the task ID
+        Args -- (int) number of task_id
+
+        """
+        self.id = num
 
     def get_task_id(self): 
         """Returns the ID of the task""" 
@@ -95,11 +101,48 @@ class Task:
         self.status = new_status
 
 
+# Format of CSV:
+# Task ID,Task Priority,Task Description,Task StatusTask Created,Task Deadline
+
+class CSVhandler():
+
+    def __init__(self, file_path = "hit.csv"):
+        self.path = file_path
+
+    
+
+    # Add a list of Task (ToDoList) to a csv 
+    # Append list to the csv file
+    def add_todo_to_csv(self, task : Task ):
+        with open(self.path, "a", newline="") as csv_file:
+            csv_file_writer = csv.writer(csv_file)
+            csv_file_writer.writerow([task.get_task_id(), task.priority, task.description, task.status, task.date_added, task.deadline])
+
+
+
+    def get_next_task_id(self):
+        """
+        Finds the last task ID in the CSV
+        Return -- (int) Task ID of last entry or 0 if empty
+        """
+        last_line = None
+        with open(self.path, "r") as csv_file:
+            csv_reader = csv.reader(csv_file)
+            # Skip header
+            row = next(csv_reader)
+            for row in csv_reader:
+                last_line = row
+        
+        return int(last_line[0]) + 1
+
 # holds the actual data -> List of Tasks
 class ToDoList: 
 
-    def __init__(self):
+    def __init__(self, csv_obj : CSVhandler):
         self.tasks = []
+        self.file_path = csv_obj.path
+        self.csv_obj = csv_obj
+        self.task = None
     """
     Represents a collection of Tasks objects
     """
@@ -111,7 +154,11 @@ class ToDoList:
         Args:
         new_task -- (Task) New Task
         """
-        self.tasks.append(new_task)
+        self.task = new_task
+                # Get starting Task ID
+        current_id = self.csv_obj.get_next_task_id()
+        new_task.set_task_id(current_id)
+        self.csv_obj.add_todo_to_csv(self.task)
 
     # Remove task from list
     def remove_task(self, remove_task_id : int):
@@ -185,6 +232,9 @@ class ToDoList:
         if update_priority != "":
             task.set_priority(update_priority)
         return True
+    
+    def save_to_csv(self):
+        return 
 
 # Menu for user management of ToDoList
 # Is a user interface to interact with the ToDoList
@@ -312,20 +362,19 @@ class UserInterface:
                     print("Update Failed")
 
             # Quick program
-            elif user_input == "q": sys.exit()
+            elif user_input == "q": 
+                # Save Tasks list to csv
+                self.todo_list.save_to_csv()
+                sys.exit()
 
 
-class CSVhandler:
-
-    def __init__(self, csv_file_path):
-
-        self.csv_path = csv_file_path
-        
 
 
-     
-    def add_task(self, new_task : Task):
-        with open(self.csv_path, "a", newline="") as save_task:
-            csv_writer = csv.writer(save_task)
-        
-            csv_writer.writerow([new_task.id, new_task.description, new_task.date_added, new_task.deadline, new_task.status, new_task.priority])
+
+my_csv_handler = CSVhandler()
+my_list_todo = ToDoList(my_csv_handler)
+ui = UserInterface(my_list_todo)
+ui.display_main_menu()
+
+
+
