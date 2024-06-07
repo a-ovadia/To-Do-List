@@ -93,11 +93,10 @@ class CSVhandler():
     # Append list to the csv file
     def add_todo_to_csv(self, task : Task ):
         next_id = self.get_last_task_id() + 1
-        task.set_task_id(next_id)
         with open(self.path, "a", newline="") as csv_file:
             csv_file_writer = csv.writer(csv_file)
             
-            csv_file_writer.writerow([task.get_task_id(), task.priority, task.description, task.status, task.date_added, task.deadline])
+            csv_file_writer.writerow([next_id, task.priority, task.description, task.status, task.date_added, task.deadline])
 
 
 
@@ -129,11 +128,33 @@ class CSVhandler():
             for row in csv_reader:
                 print("{:<20} {:<20} {:<30} {:<20} {:<20} {:<30}".format(row[0], row[1], row[2], row[3], row[4] , row[5]))
 
+    def validate_task_id(self, task_id):
+        """
+        Validates whether a task exists in the csv file
+
+        Args:
+            task_id -- (int) Task to search csv for
+        """
+        try:
+            with open(self.path, "r") as csv_file:
+                csv_reader = csv.reader(csv_file)
+                row = next(csv_reader)
+                for row in csv_reader:
+                    
+                    if int(row[0]) == task_id:
+                        # Task found
+                        return True
+                    
+        except: print("Error searching for task")
+        return False
         
     def update_csv_file(self, task, id):
         # Create temp file 
         temp_file = self.path + ".tmp"
         task_found = False
+        if not self.validate_task_id(id):
+            print("Error. You entered an invalid Task ID")
+            return False
 
         with open(self.path, "r", newline="") as csv_file, open(temp_file, "w", newline="") as csv_tmp:
             csv_writer = csv.writer(csv_tmp)
@@ -164,6 +185,56 @@ class CSVhandler():
         else:
             os.remove(temp_file)
 
+    def remove_task(self, task_id):
+        if not self.validate_task_id(task_id):
+            print("Error. You entered an invalid Task ID")
+            return False
+        
+        tmp_file = self.path + ".tmp"
+        task_removed = False
+
+        with open(self.path, "r") as csv_file, open(tmp_file, "w", newline="") as tmp_csv_file:
+            csv_writer = csv.writer(tmp_csv_file)
+            
+            csv_reader = csv.reader(csv_file)
+            
+            header = next(csv_reader)
+            csv_writer.writerow(header) # Write header to temp file
+            task_id_counter = 0
+            
+
+            for row in csv_reader:
+                # check if the row does not match the ID
+                if int(row[0]) != task_id:
+                    # If we have not found the task, add to tmp file
+                    if not task_removed:
+                        csv_writer.writerow(row)
+                        
+                    # If we found the task, we have to modify the task IDs afterwards to match up to prevent gaps in IDs
+                    else:
+                        
+                        row[0] = task_id_counter
+                        csv_writer.writerow(row)
+                        task_id_counter += 1
+                else:
+                    # skip
+                    task_removed = True
+                    # Set ID to None to ensure previous if check returns False and thus executes for the rest of the tasks
+                    task_id_counter = task_id
+                    task_id = None
+
+
+    
+        if task_removed:
+            os.replace(tmp_file, self.path)
+            return True
+        else:
+            os.remove(tmp_file)
+            return False
+
+         
+
+
 # holds the actual data -> List of Tasks
 class ToDoList: 
 
@@ -193,8 +264,8 @@ class ToDoList:
         Args:
         remove_task_id -- (int) remove task with the ID from Tasks list
         """
-
-        return
+        return self.csv_obj.remove_task(remove_task_id)
+        
        
 
     def view_tasks(self):
@@ -340,7 +411,7 @@ class UserInterface:
     
     def display_main_menu(self):
         """
-        Interface to allow terminal input to manage the Tasks List
+        Interface to allow ter2minal input to manage the Tasks List
         
         """
 
