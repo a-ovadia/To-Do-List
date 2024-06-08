@@ -1,4 +1,4 @@
-import ToDoList
+import TaskInterface
 import sys
 import datetime as dt
 import Task
@@ -6,7 +6,7 @@ import Task
 # Is a user interface to interact with the ToDoList
 class UserInterface:
     # Constructor
-    def __init__(self, todo_list : ToDoList):
+    def __init__(self, todo_list : TaskInterface.DataInterface):
         """
         Represents an command line terminal interface for managing the Tasks list
         Args:

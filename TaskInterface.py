@@ -1,8 +1,8 @@
 import CSVHandler
 import Task
 
-# holds the actual data -> List of Tasks
-class ToDoList: 
+# Interface between the UI and the CSVHandler
+class DataInterface: 
     # Constructor
     def __init__(self, csv_obj : CSVHandler):
         self.csv_obj = csv_obj
