@@ -9,6 +9,9 @@ class CSVhandler:
     def __init__(self, file_path = "hit.csv"):
         self.path = file_path
 
+    def __repr__(self):
+        return f"CSV file: {self.path}"
+
     # Add a list of Task (ToDoList) to a csv 
     # Append list to the csv file
     def add_todo_to_csv(self, task : Task ):
