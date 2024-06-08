@@ -4,9 +4,11 @@ import os
 # Format of CSV:
 # Task ID,Task Priority,Task Description,Task StatusTask Created,Task Deadline
 
+
+# Todo initialize new csv file and set the headers
 class CSVhandler:
     # Constructor
-    def __init__(self, file_path = "hit.csv"):
+    def __init__(self, file_path = "My Task Lists.csv"):
         self.path = file_path
 
     def __repr__(self):
