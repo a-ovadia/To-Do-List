@@ -56,7 +56,7 @@ class UserInterface:
         # Create new Task obj
         new_task = Task.Task(task_desciption, deadline_str, task_status, task_priority)
         # Add Task to ToDoList
-        self.todo_list.add_task(new_task)
+        return self.todo_list.add_task(new_task)
 
     def ui_remove_task(self):
         """
@@ -66,9 +66,10 @@ class UserInterface:
         # Print current task list to display Task ID
         self.todo_list.view_tasks()
         task_id_str = input("Please enter the Task ID to delete: ")
-        try:
-            task_id = int(task_id_str)
-        except: return False
+        if not task_id_str.isnumeric():
+            print("Error. You entered an invalid character. Please only enter numerical characters")
+            return False
+        task_id = int(task_id_str)
 
         return self.todo_list.remove_task(task_id)
     
@@ -110,10 +111,9 @@ class UserInterface:
 
         try:
             new_deadline = dt.datetime.strptime(new_deadline, "%m/%d/%Y %H:%M")
-        except:
-            if new_deadline != "":
-                print("Error! You entered an date in an invalid format")
-                return False
+        except ValueError:
+            print("Error! You entered an date in an invalid format")
+            return False
         update_task = Task.Task(new_desc, new_deadline, new_status, new_priority)
                        
         return self.todo_list.update_task(update_task, task_id)
@@ -135,7 +135,9 @@ class UserInterface:
             user_input = input("Enter selection: ")
 
             if user_input == "1":
-                self.ui_add_new_task()
+                if self.ui_add_new_task():
+                    print("Successfully added new Task!")
+                else: print("Task failed")
 
             # View Tasks
             if user_input == "2":

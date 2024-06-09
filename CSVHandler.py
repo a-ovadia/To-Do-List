@@ -21,9 +21,7 @@ class CSVhandler:
                 csv_writer = csv.writer(new_csv_file)
                 row = ["Task ID", "Priority", "Description", "Status", "Dated Created", "Deadline" ]
                 csv_writer.writerow(row)
-        except csv.Error:
-            print("An error opening the csv occured ")
-            return False
+        except: return False
 
     # Add a list of Task (ToDoList) to a csv 
     # Append list to the csv file
@@ -34,11 +32,15 @@ class CSVhandler:
             task -- (Task) Task to add
         """
         next_id = self.get_last_task_id() + 1
-        with open(self.path, "a", newline="") as csv_file:
-            csv_file_writer = csv.writer(csv_file)
-            
-            csv_file_writer.writerow([next_id, task.priority, task.description, task.status, task.date_added, task.deadline])
-
+        try:
+            with open(self.path, "a", newline="") as csv_file:
+                csv_file_writer = csv.writer(csv_file)
+                
+                csv_file_writer.writerow([next_id, task.priority, task.description, task.status, task.date_added, task.deadline])
+                return True
+        except Exception as e:
+            print(f"An error has occurred when trying to add a new task {e}")
+            return False
 
 
     def get_last_task_id(self):

@@ -19,7 +19,7 @@ class DataInterface:
         new_task -- (Task) New Task
         """
        
-        self.csv_obj.add_todo_to_csv(new_task)
+        return self.csv_obj.add_todo_to_csv(new_task)
 
     # Remove task from list
     def remove_task(self, remove_task_id : int):
