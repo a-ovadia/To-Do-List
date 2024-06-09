@@ -10,9 +10,20 @@ class CSVhandler:
     # Constructor
     def __init__(self, file_path = "My Task Lists.csv"):
         self.path = file_path
+        self.initialze_csv_file_headers();
 
     def __repr__(self):
         return f"CSV file: {self.path}"
+
+    def initialze_csv_file_headers(self):
+        try:
+            with open(self.path, "x", newline="") as new_csv_file:
+                csv_writer = csv.writer(new_csv_file)
+                row = ["Task ID", "Priority", "Description", "Status", "Dated Created", "Deadline" ]
+                csv_writer.writerow(row)
+        except csv.Error:
+            print("An error opening the csv occured ")
+            return False
 
     # Add a list of Task (ToDoList) to a csv 
     # Append list to the csv file
@@ -36,15 +47,16 @@ class CSVhandler:
         Return -- (int) Task ID of last entry or 0 if empty
         """
         last_line = None
-        with open(self.path, "r") as csv_file:
-            csv_reader = csv.reader(csv_file)
-            # Skip header
-            row = next(csv_reader)
-            for row in csv_reader:
-                last_line = row
-        if last_line == None:
+        with open(self.path, "r", newline="") as csv_file:
+                csv_reader = csv.reader(csv_file)
+                for row in csv_reader:
+                    last_line = row
+        if last_line is None or not last_line[0].isnumeric():
             return 0
-        return int(last_line[0])
+        try:
+            return int(last_line[0])
+        except ValueError:
+            return 0
     
     def print_csv_file(self):
         """
@@ -52,11 +64,15 @@ class CSVhandler:
         """
         print("{:<8} {:<13} {:<40} {:<20} {:<20} {:<30}".format("Task ID", "Task Priority", "Description", "Status", "Date added", "Deadline"))
         print("-" * 110)  # Separator line
-        with open(self.path, "r") as csv_file:
+        with open(self.path, "r", newline="") as csv_file:
             csv_reader = csv.reader(csv_file)
             header = next(csv_reader) # Skip header
             for row in csv_reader:
-                print("{:<8} {:<13} {:<30} {:<20} {:<20} {:<30}".format(row[0], row[1], row[2], row[3], row[4] , row[5]))
+                try:
+                    if row[0].isnumeric:
+                        print("{:<8} {:<13} {:<30} {:<20} {:<20} {:<30}".format(row[0], row[1], row[2], row[3], row[4] , row[5]))
+
+                except: return
 
     def validate_task_id(self, task_id):
         """
@@ -66,7 +82,7 @@ class CSVhandler:
             task_id -- (int) Task to search csv for
         """
         try:
-            with open(self.path, "r") as csv_file:
+            with open(self.path, "r", newline="") as csv_file:
                 csv_reader = csv.reader(csv_file)
                 row = next(csv_reader)
                 for row in csv_reader:
@@ -133,7 +149,7 @@ class CSVhandler:
         tmp_file = self.path + ".tmp"
         task_removed = False
 
-        with open(self.path, "r") as csv_file, open(tmp_file, "w", newline="") as tmp_csv_file:
+        with open(self.path, "r", newline="") as csv_file, open(tmp_file, "w", newline="") as tmp_csv_file:
             csv_writer = csv.writer(tmp_csv_file)
             
             csv_reader = csv.reader(csv_file)
