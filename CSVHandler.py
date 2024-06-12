@@ -71,10 +71,15 @@ class CSVhandler:
             header = next(csv_reader) # Skip header
             for row in csv_reader:
                 try:
-                    if row[0].isnumeric:
+                    if row[0].isnumeric():
                         print("{:<8} {:<13} {:<30} {:<20} {:<20} {:<30}".format(row[0], row[1], row[2], row[3], row[4] , row[5]))
 
-                except: return
+                except FileNotFoundError:
+                    print(f"Error: The file '{self.path}' does not exist.")
+                except IndexError as e:
+                    print(f"Error: Missing data in CSV row. {e}")
+                except Exception as e:
+                    print(f"An unexpected error occurred: {e}")
 
     def validate_task_id(self, task_id):
         """
