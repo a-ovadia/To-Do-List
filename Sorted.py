@@ -18,6 +18,10 @@ class Sorter:
     def get_sort_data(self):
         return self.data
     
+    def priority_key(self, item):
+        """Custom key for sorting by priority."""
+        priority_map = {'high': 1, 'medium': 2, 'low': 3}
+        return priority_map.get(item[1].lower()) 
 
     """
 1. Sort by Priority (Ascending)
@@ -33,5 +37,7 @@ class Sorter:
 """
     def sort(self):
         if self.option == "1":
-            return sorted(self.data, key=lambda x: x[1])
+            return sorted(self.data, key=self.priority_key)
 
+        elif self.option == "2":
+            return sorted(self.data, key=self.priority_key, reverse=True)
