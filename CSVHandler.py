@@ -23,6 +23,12 @@ class CSVhandler:
                 csv_writer.writerow(row)
         except: return False
 
+    def set_path(self, file_path):
+        self.path = file_path
+
+    def get_path(self):
+        return self.path
+
     # Add a list of Task (ToDoList) to a csv 
     # Append list to the csv file
     def add_todo_to_csv(self, task : Task ):
