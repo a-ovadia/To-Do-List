@@ -200,3 +200,18 @@ class CSVhandler:
         else:
             os.remove(tmp_file)
             return False
+
+
+    def load_csv_to_list(self):
+        """
+        Outputs contents of the csv to a list
+        """
+        task_list = []
+        
+        with open(self.path, "r", newline="") as csv_file:
+
+            csv_reader = csv.reader(csv_file)
+            header = next(csv_reader) # Skip header
+            for row in csv_reader:
+                task_list.append(row)
+        return task_list

@@ -131,6 +131,7 @@ class UserInterface:
             print("2. View all Tasks")
             print("3. Remove Task: ")
             print("4. Update task")
+            print("5. Advanced Sorting Menu")
             print("q. Quit Program")
             user_input = input("Enter selection: ")
 
@@ -154,6 +155,39 @@ class UserInterface:
                 self.todo_list.view_tasks()
                 if not self.ui_update_task():
                     print("Update Failed")
+
+
+            elif user_input == "5":
+                search_selection = None
+                while search_selection != "c":
+                    print("""
+Please choose a sorting option:
+1. Sort by Priority (Ascending)
+2. Sort by Priority (Descending)
+3. Sort Alphabetically (A-Z)
+4. Sort Alphabetically (Z-A)
+5. Sort by Status (Ascending)
+6. Sort by Status (Descending)
+7. Sort by Date Created (Ascending)
+8. Sort by Date Created (Descending)
+9. Sort by Deadline (Ascending)
+10. Sort by Deadline (Descending)
+                        """)
+                    search = input("Enter sort method: ").lower()
+                    if search in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]:
+                        sorted_list = self.todo_list.sorter_interface(search)
+                        # Define the headers
+                        headers = ["Task ID", "Priority", "Description", "Status", "Date Created", "Deadline"]
+    
+                        # Print the headers
+                        print(f"{headers[0]:<10} {headers[1]:<10} {headers[2]:<30} {headers[3]:<10} {headers[4]:<20} {headers[5]:<20}")
+                        print("=" * 100)
+    
+                        # Print each row in the sorted list
+                        for row in sorted_list:
+                            print(f"{row[0]:<10} {row[1]:<10} {row[2]:<30} {row[3]:<10} {row[4]:<20} {row[5]:<20}")
+
+
 
             # Quick program
             elif user_input == "q": 

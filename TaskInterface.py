@@ -1,5 +1,6 @@
 import CSVHandler
 import Task
+from Sorted import Sorter
 
 # Interface between the UI and the CSVHandler
 class DataInterface: 
@@ -51,3 +52,13 @@ class DataInterface:
         update_priority -- (str) new task priority
         """   
         self.csv_obj.update_csv_file(update_task, task_id)
+
+    def load_csv_to_list(self):
+        return self.csv_obj.load_csv_to_list()
+    
+
+    
+    def sorter_interface(self, option):
+        data = self.load_csv_to_list()
+        return Sorter(option, data,).sort()
+        
