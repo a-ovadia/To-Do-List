@@ -10,7 +10,7 @@ class CSVhandler:
     # Constructor
     def __init__(self, file_path = "My Task Lists.csv"):
         self.path = file_path
-        self.initialze_csv_file_headers();
+        self.initialze_csv_file_headers()
 
     def __repr__(self):
         return f"CSV file: {self.path}"
