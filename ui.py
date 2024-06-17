@@ -187,7 +187,7 @@ Please choose a sorting option:
                         for row in sorted_list:
                             print(f"{row[0]:<10} {row[1]:<10} {row[2]:<30} {row[3]:<10} {row[4]:<20} {row[5]:<20}")
 
-
+                        self.todo_list.load_list_to_csv(sorted_list)
 
             # Quick program
             elif user_input == "q": 

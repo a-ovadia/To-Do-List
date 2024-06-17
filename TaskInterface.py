@@ -61,4 +61,6 @@ class DataInterface:
     def sorter_interface(self, option):
         data = self.load_csv_to_list()
         return Sorter(option, data,).sort()
-        
+    
+    def load_list_to_csv(self, task_list):
+        return self.csv_obj.load_list_to_csv(task_list)

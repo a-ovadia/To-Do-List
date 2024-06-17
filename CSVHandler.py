@@ -211,7 +211,15 @@ class CSVhandler:
         with open(self.path, "r", newline="") as csv_file:
 
             csv_reader = csv.reader(csv_file)
-            header = next(csv_reader) # Skip header
+            next(csv_reader) # Skip header
             for row in csv_reader:
                 task_list.append(row)
         return task_list
+    
+    def load_list_to_csv(self, task_list):
+        with open(self.get_path(), "w", newline="") as csv_file:
+            csv_writer = csv.writer(csv_file)
+            row = ["Task ID", "Priority", "Description", "Status", "Dated Created", "Deadline" ]
+            csv_writer.writerow(row)
+            for entry in task_list:
+                csv_writer.writerow(entry)
