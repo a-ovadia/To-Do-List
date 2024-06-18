@@ -22,7 +22,7 @@ class UserInterface:
         """
 
         task_desciption = input("Enter task Description\n")
-        if task_desciption == "":
+        if task_desciption.strip() == "":
             print("Error. You have not entered a task description")
             return False
         deadline_str = input("Enter deadline in (mm/dd/yyyy hh:mm) format: ")
