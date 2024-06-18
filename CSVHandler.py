@@ -58,10 +58,13 @@ class CSVhandler:
         Return -- (int) Task ID of last entry or 0 if empty
         """
         last_line = None
-        with open(self.path, "r", newline="") as csv_file:
-                csv_reader = csv.reader(csv_file)
-                for row in csv_reader:
-                    last_line = row
+        try:
+            with open(self.path, "r", newline="") as csv_file:
+                    csv_reader = csv.reader(csv_file)
+                    for row in csv_reader:
+                        last_line = row
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
         if last_line is None or not last_line[0].isnumeric():
             return 0
         try:
