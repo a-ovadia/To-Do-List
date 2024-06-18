@@ -53,7 +53,7 @@ class DataInterface:
         update_status -- (str) new task status
         update_priority -- (str) new task priority
         """   
-        self.csv_obj.update_csv_file(update_task, task_id)
+        return self.csv_obj.update_csv_file(update_task, task_id)
 
     def load_csv_to_list(self):
         return self.csv_obj.load_csv_to_list()

@@ -92,10 +92,10 @@ class UserInterface:
         task_id = int(task_id_str)
         new_desc = input("Enter new description. Press Enter to skip: ").lower()
         new_deadline = input("Enter new deadline in (mm/dd/yyyy hh:mm) format. Press Enter to skip: ")   
-        new_status = input("Enter new status -> n: not started/i: in progress/ c: completed or Press Enter to skip: ").lower()
-        new_priority = input("Enter new priortiy. -> 1: high, 2: medium, 3: low or Press Enter to skip: ").lower()
+        new_status = input("Enter new status -> n: not started/i: in progress/ c: completed or Press Enter to skip: ")
+        new_priority = input("Enter new priortiy. -> 1: high, 2: medium, 3: low or Press Enter to skip: ")
 
-        if new_status not in ["n", "i", "c"]:
+        if new_status not in ["n", "i", "c" , ""]:
             print("You have entered an invalid status")
             return False            
         if new_status == "n": new_status = "not started"
@@ -110,11 +110,13 @@ class UserInterface:
         elif new_priority == "2": new_priority = "medium"
         elif new_priority == "3": new_priority = "low"
 
-        try:
-            new_deadline = dt.datetime.strptime(new_deadline, "%m/%d/%Y %H:%M")
-        except ValueError:
-            print("Error! You entered an date in an invalid format")
-            return False
+        if new_deadline != "":
+
+            try:
+                new_deadline = dt.datetime.strptime(new_deadline, "%m/%d/%Y %H:%M")
+            except ValueError:
+                print("Error! You entered an date in an invalid format")
+                return False
         update_task = Task.Task(new_desc, new_deadline, new_status, new_priority)
                        
         return self.todo_list.update_task(update_task, task_id)

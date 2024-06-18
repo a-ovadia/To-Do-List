@@ -153,8 +153,10 @@ class CSVhandler:
     
         if task_found:
             os.replace(temp_file, self.path)
+            return True
         else:
             os.remove(temp_file)
+            return False
 
     def remove_task(self, task_id):
         """
