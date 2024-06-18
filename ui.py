@@ -172,6 +172,7 @@ Please choose a sorting option:
 8. Sort by Date Created (Descending)
 9. Sort by Deadline (Ascending)
 10. Sort by Deadline (Descending)
+11. q: Back to main menu                          
                         """)
                     search = input("Enter sort method: ").lower()
                     if search in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]:
@@ -188,6 +189,8 @@ Please choose a sorting option:
                             print(f"{row[0]:<10} {row[1]:<10} {row[2]:<30} {row[3]:<10} {row[4]:<20} {row[5]:<20}")
 
                         self.todo_list.load_list_to_csv(sorted_list)
+                    elif search == "q":
+                        break
 
             # Quick program
             elif user_input == "q": 
