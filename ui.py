@@ -79,17 +79,18 @@ class UserInterface:
         Interfaces that asks terminal input to create a new Tasks details to modify an existing Task
         """
         task_id_str = input("Please enter which task # to update: ")
-        # Ensure task ID exists. Return False if it doesn't exist
-        # try:
-        #     task_id = int(task_id_str)
-        #     if not self.todo_list.validate_task_id(task_id):
-        #         print("Error. You entered an invalid task ID")
-        #         return False 
-        # except: 
-        #     print("Error! You have entered an incorrect value. Please ensure you are entering a valid number")
-        #     return False
+        # Validate user input is a number        
+        try:
+            task_id = int(task_id_str)
+        except:
+            print("You must select a task by a numeric value")
 
-        task_id = int(task_id_str)
+        # Validate task ID exists
+        if not (self.todo_list.validate_task_id(task_id)):
+            print("The Task ID you entered does not exist")
+            return False
+        
+        
         new_desc = input("Enter new description. Press Enter to skip: ").lower()
         new_deadline = input("Enter new deadline in (mm/dd/yyyy hh:mm) format. Press Enter to skip: ")   
         new_status = input("Enter new status -> n: not started/i: in progress/ c: completed or Press Enter to skip: ")
@@ -98,9 +99,9 @@ class UserInterface:
         if new_status not in ["n", "i", "c" , ""]:
             print("You have entered an invalid status")
             return False            
-        if new_status == "n": new_status = "not started"
-        elif new_status == "i": new_status == "in progress"
-        elif new_status == "c": new_status = "completed"
+        if new_status.lower() == "n": new_status = "not started"
+        elif new_status.lower() == "i": new_status == "in progress"
+        elif new_status.lower() == "c": new_status = "completed"
 
         if new_priority.lower() not in ["1", "2", "3", ""]:
             print("You have entered an invalid priority")

@@ -58,7 +58,8 @@ class DataInterface:
     def load_csv_to_list(self):
         return self.csv_obj.load_csv_to_list()
     
-
+    def validate_task_id(self, task_id):
+        return self.csv_obj.validate_task_id(task_id)
     
     def sorter_interface(self, option):
         data = self.load_csv_to_list()
