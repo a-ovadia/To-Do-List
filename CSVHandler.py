@@ -9,6 +9,8 @@ import os
 class CSVhandler:
     # Constructor
     def __init__(self, file_path = "My Task Lists.csv"):
+        if ".csv" not in file_path:
+            raise FileNotFoundError("The filename must end in .csv")
         self.path = file_path
         self.initialze_csv_file_headers()
 
