@@ -6,6 +6,8 @@ from Sorted import Sorter
 class DataInterface: 
     # Constructor
     def __init__(self, csv_obj : CSVHandler):
+        if type(csv_obj) is not CSVHandler.CSVhandler:
+            raise TypeError("You must pass a CSVHandler object")
         self.csv_obj = csv_obj
      
     """

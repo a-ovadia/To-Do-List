@@ -23,7 +23,8 @@ class CSVhandler:
                 csv_writer = csv.writer(new_csv_file)
                 row = ["Task ID", "Priority", "Description", "Status", "Dated Created", "Deadline" ]
                 csv_writer.writerow(row)
-        except: return False
+        except Exception as e:
+            print(f"An error occured with trying to modify {self.path}")
 
     def set_path(self, file_path):
         self.path = file_path
@@ -74,20 +75,23 @@ class CSVhandler:
         """
         print("{:<8} {:<13} {:<40} {:<20} {:<20} {:<30}".format("Task ID", "Task Priority", "Description", "Status", "Date added", "Deadline"))
         print("-" * 110)  # Separator line
-        with open(self.path, "r", newline="") as csv_file:
-            csv_reader = csv.reader(csv_file)
-            header = next(csv_reader) # Skip header
-            for row in csv_reader:
-                try:
-                    if row[0].isnumeric():
-                        print("{:<8} {:<13} {:<30} {:<20} {:<20} {:<30}".format(row[0], row[1], row[2], row[3], row[4] , row[5]))
+        try:
+            with open(self.path, "r", newline="") as csv_file:
+                csv_reader = csv.reader(csv_file)
+                header = next(csv_reader) # Skip header
+                for row in csv_reader:
+                    try:
+                        if row[0].isnumeric():
+                            print("{:<8} {:<13} {:<30} {:<20} {:<20} {:<30}".format(row[0], row[1], row[2], row[3], row[4] , row[5]))
 
-                except FileNotFoundError:
-                    print(f"Error: The file '{self.path}' does not exist.")
-                except IndexError as e:
-                    print(f"Error: Missing data in CSV row. {e}")
-                except Exception as e:
-                    print(f"An unexpected error occurred: {e}")
+                    except FileNotFoundError:
+                        print(f"Error: The file '{self.path}' does not exist.")
+                    except IndexError as e:
+                        print(f"Error: Missing data in CSV row. {e}")
+                    except Exception as e:
+                        print(f"An unexpected error occurred: {e}")
+        except Exception as e:
+            print(f"An exception occured when trying to read the file {e}")
 
     def validate_task_id(self, task_id):
         """
@@ -123,28 +127,29 @@ class CSVhandler:
         if not self.validate_task_id(id):
             print("Error. You entered an invalid Task ID")
             return False
-
-        with open(self.path, "r", newline="") as csv_file, open(temp_file, "w", newline="") as csv_tmp:
-            csv_writer = csv.writer(csv_tmp)
-            csv_reader = csv.reader(csv_file)
-            
-            header = next(csv_reader)
-            csv_writer.writerow(header) # Write header to temp file
-
-            for row in csv_reader:
-                if int(row[0]) == id:
-                    updated_priority = task.priority if task.priority != "" else row[1]
-                    updated_description = task.description if task.description != "" else row[2]
-                    updated_status = task.status if task.status != "" else row[3]
-                    updated_deadline = task.deadline if task.deadline != "" else row[5]
-                    date_added = row[4]
-
-                    csv_writer.writerow([id, updated_priority, updated_description, updated_status, date_added, updated_deadline])
-                    task_found = True
-                    
-                else:
-                    csv_writer.writerow(row)
+        try:
+            with open(self.path, "r", newline="") as csv_file, open(temp_file, "w", newline="") as csv_tmp:
+                csv_writer = csv.writer(csv_tmp)
+                csv_reader = csv.reader(csv_file)
                 
+                header = next(csv_reader)
+                csv_writer.writerow(header) # Write header to temp file
+
+                for row in csv_reader:
+                    if int(row[0]) == id:
+                        updated_priority = task.priority if task.priority != "" else row[1]
+                        updated_description = task.description if task.description != "" else row[2]
+                        updated_status = task.status if task.status != "" else row[3]
+                        updated_deadline = task.deadline if task.deadline != "" else row[5]
+                        date_added = row[4]
+
+                        csv_writer.writerow([id, updated_priority, updated_description, updated_status, date_added, updated_deadline])
+                        task_found = True
+                        
+                    else:
+                        csv_writer.writerow(row)
+        except Exception as e:
+            print(f"An exception occured when trying to read the file {e}")
     
         if task_found:
             os.replace(temp_file, self.path)
@@ -163,37 +168,38 @@ class CSVhandler:
         
         tmp_file = self.path + ".tmp"
         task_removed = False
+        try: 
+            with open(self.path, "r", newline="") as csv_file, open(tmp_file, "w", newline="") as tmp_csv_file:
+                csv_writer = csv.writer(tmp_csv_file)
+                
+                csv_reader = csv.reader(csv_file)
+                
+                header = next(csv_reader)
+                csv_writer.writerow(header) # Write header to temp file
+                task_id_counter = 0
+                
 
-        with open(self.path, "r", newline="") as csv_file, open(tmp_file, "w", newline="") as tmp_csv_file:
-            csv_writer = csv.writer(tmp_csv_file)
-            
-            csv_reader = csv.reader(csv_file)
-            
-            header = next(csv_reader)
-            csv_writer.writerow(header) # Write header to temp file
-            task_id_counter = 0
-            
-
-            for row in csv_reader:
-                # check if the row does not match the ID
-                if int(row[0]) != task_id:
-                    # If we have not found the task, add to tmp file
-                    if not task_removed:
-                        csv_writer.writerow(row)
-                        
-                    # If we found the task, we have to modify the task IDs afterwards to match up to prevent gaps in IDs
+                for row in csv_reader:
+                    # check if the row does not match the ID
+                    if int(row[0]) != task_id:
+                        # If we have not found the task, add to tmp file
+                        if not task_removed:
+                            csv_writer.writerow(row)
+                            
+                        # If we found the task, we have to modify the task IDs afterwards to match up to prevent gaps in IDs
+                        else:
+                            
+                            row[0] = task_id_counter
+                            csv_writer.writerow(row)
+                            task_id_counter += 1
                     else:
-                        
-                        row[0] = task_id_counter
-                        csv_writer.writerow(row)
-                        task_id_counter += 1
-                else:
-                    # skip
-                    task_removed = True
-                    # Set ID to None to ensure previous if check returns False and thus executes for the rest of the tasks
-                    task_id_counter = task_id
-                    task_id = None
-
+                        # skip
+                        task_removed = True
+                        # Set ID to None to ensure previous if check returns False and thus executes for the rest of the tasks
+                        task_id_counter = task_id
+                        task_id = None
+        except Exception as e:
+            print(f"An exception occured when trying to read the file {e}")
 
     
         if task_removed:
@@ -209,19 +215,24 @@ class CSVhandler:
         Outputs contents of the csv to a list
         """
         task_list = []
-        
-        with open(self.path, "r", newline="") as csv_file:
+        try:
+            with open(self.path, "r", newline="") as csv_file:
 
-            csv_reader = csv.reader(csv_file)
-            next(csv_reader) # Skip header
-            for row in csv_reader:
-                task_list.append(row)
+                csv_reader = csv.reader(csv_file)
+                next(csv_reader) # Skip header
+                for row in csv_reader:
+                    task_list.append(row)
+        except Exception as e:
+            print(f"An exception occured when trying to read the file {e}")
         return task_list
     
     def load_list_to_csv(self, task_list):
-        with open(self.get_path(), "w", newline="") as csv_file:
-            csv_writer = csv.writer(csv_file)
-            row = ["Task ID", "Priority", "Description", "Status", "Dated Created", "Deadline" ]
-            csv_writer.writerow(row)
-            for entry in task_list:
-                csv_writer.writerow(entry)
+        try:
+            with open(self.get_path(), "w", newline="") as csv_file:
+                csv_writer = csv.writer(csv_file)
+                row = ["Task ID", "Priority", "Description", "Status", "Dated Created", "Deadline" ]
+                csv_writer.writerow(row)
+                for entry in task_list:
+                    csv_writer.writerow(entry)
+        except Exception as e:
+            print(f"An exception occured when trying to read the file {e}")

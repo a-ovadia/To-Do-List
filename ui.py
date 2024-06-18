@@ -12,7 +12,8 @@ class UserInterface:
         Args:
         todo_list -- (ToDoList) - Tasks list to manage
         """
-
+        if type(todo_list) is not TaskInterface.DataInterface:
+            raise TypeError("UI only accepts a DataInterface object")
         self.todo_list = todo_list
 
     def ui_add_new_task(self):
